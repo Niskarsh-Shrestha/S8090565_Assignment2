@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -20,7 +21,7 @@
 
     <!-- First Name Input -->
     <EditText
-        android:id="@+id/firstNameInput"
+        android:id="@+id/etFirstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
@@ -33,7 +34,7 @@
 
     <!-- Student ID Input -->
     <EditText
-        android:id="@+id/studentIdInput"
+        android:id="@+id/etStudentId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Student ID (e.g., s12345678)"
@@ -47,7 +48,7 @@
 
     <!-- Login Button -->
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Login"
@@ -55,8 +56,6 @@
         android:background="#1C1C1E"
         android:textColor="#FFFFFF"
         android:layout_marginBottom="16dp"
-        android:padding="12dp"/>
-
-    <!-- Error Message -->
+        android:padding="12dp" />
 
 </LinearLayout>
