@@ -3,7 +3,6 @@ package com.example.s8090565assignment2
 import Dish
 import DishAdapter
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,21 +18,24 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard) // Ensure the correct layout is set
+        setContentView(R.layout.activity_dashboard)
 
-        // Initialize RecyclerView and Adapter
-        recyclerView = findViewById(R.id.entityRecyclerView)  // Corrected to match the ID in the XML
+        recyclerView = findViewById(R.id.entityRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = DishAdapter(emptyList()) // Initially empty list
+        adapter = DishAdapter(emptyList())
         recyclerView.adapter = adapter
 
-        // Fetch dishes from the API
-        fetchDishes()
+        val firstName = intent.getStringExtra("firstName")?.trim() ?: ""
+        val studentID = intent.getStringExtra("studentID")?.trim() ?: ""
+
+        fetchDishes(firstName, studentID)
     }
 
-    private fun fetchDishes() {
+    private fun fetchDishes(firstName: String, studentID: String) {
+        val url = "https://nit3213api.onrender.com/dashboard/food?firstName=$firstName&studentID=$studentID"
+
         val request = Request.Builder()
-            .url("https://nit3213api.onrender.com/dashboard/food") // Replace with your actual API URL for dishes
+            .url(url)
             .build()
 
         OkHttpClient().newCall(request).enqueue(object : Callback {
@@ -46,11 +48,9 @@ class DashboardActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 if (response.isSuccessful && responseBody != null) {
-                    Log.d("API_RESPONSE", "Code: ${response.code}, Body: $responseBody")
-                    // Parse JSON response
                     val jsonResponse = JSONObject(responseBody)
                     val entities = jsonResponse.getJSONArray("entities")
-                    val dishes = mutableListOf<Dish>()
+                    val dishList = mutableListOf<Dish>()
 
                     for (i in 0 until entities.length()) {
                         val dish = entities.getJSONObject(i)
@@ -60,12 +60,14 @@ class DashboardActivity : AppCompatActivity() {
                         val mealType = dish.getString("mealType")
                         val description = dish.getString("description")
 
-                        dishes.add(Dish(dishName, origin, mainIngredient, mealType, description))
+                        dishList.add(Dish(dishName, origin, mainIngredient, mealType, description))
                     }
 
-                    // Update RecyclerView with fetched dishes
                     runOnUiThread {
-                        adapter.updateDishes(dishes)
+                        adapter.updateDishes(dishList)
+                        if (dishList.isEmpty()) {
+                            Toast.makeText(this@DashboardActivity, "No dishes found", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     runOnUiThread {
