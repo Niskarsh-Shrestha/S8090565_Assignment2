@@ -2,7 +2,9 @@ package com.example.s8090565assignment2
 
 import Dish
 import DishAdapter
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,11 +22,27 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
+        // Logout button
+        val logoutButton: Button = findViewById(R.id.logoutButton)
+        logoutButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+
         recyclerView = findViewById(R.id.entityRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = DishAdapter(emptyList())
+
+        // Initialize the adapter with an item click listener
+        adapter = DishAdapter(emptyList()) { dish ->
+            val intent = Intent(this@DashboardActivity, DetailActivity::class.java)
+            intent.putExtra("dish", dish) // Pass the selected dish to DetailActivity
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
 
+        // Get firstName and studentID from intent
         val firstName = intent.getStringExtra("firstName")?.trim() ?: ""
         val studentID = intent.getStringExtra("studentID")?.trim() ?: ""
 
@@ -34,9 +52,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun fetchDishes(firstName: String, studentID: String) {
         val url = "https://nit3213api.onrender.com/dashboard/food?firstName=$firstName&studentID=$studentID"
 
-        val request = Request.Builder()
-            .url(url)
-            .build()
+        val request = Request.Builder().url(url).build()
 
         OkHttpClient().newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
