@@ -10,7 +10,6 @@ class DishAdapter(private var dishes: List<Dish>) : RecyclerView.Adapter<DishAda
     class DishViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dishName: TextView = itemView.findViewById(R.id.dishName)
         val origin: TextView = itemView.findViewById(R.id.origin)
-        val description: TextView = itemView.findViewById(R.id.description)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DishViewHolder {
@@ -22,7 +21,6 @@ class DishAdapter(private var dishes: List<Dish>) : RecyclerView.Adapter<DishAda
         val dish = dishes[position]
         holder.dishName.text = dish.dishName
         holder.origin.text = dish.origin
-        holder.description.text = dish.description
     }
 
     override fun getItemCount(): Int {

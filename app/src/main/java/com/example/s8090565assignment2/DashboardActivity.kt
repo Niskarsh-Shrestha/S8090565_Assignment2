@@ -3,6 +3,7 @@ package com.example.s8090565assignment2
 import Dish
 import DishAdapter
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,6 +46,7 @@ class DashboardActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
                 if (response.isSuccessful && responseBody != null) {
+                    Log.d("API_RESPONSE", "Code: ${response.code}, Body: $responseBody")
                     // Parse JSON response
                     val jsonResponse = JSONObject(responseBody)
                     val entities = jsonResponse.getJSONArray("entities")
