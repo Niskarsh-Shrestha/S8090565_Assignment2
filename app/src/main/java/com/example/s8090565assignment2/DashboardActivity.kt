@@ -18,14 +18,12 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DishAdapter
 
-    // Using SharedPreferences to store credentials securely
     private val sharedPreferences by lazy { getSharedPreferences("UserCredentials", MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // Logout button
         val logoutButton: Button = findViewById(R.id.logoutButton)
         logoutButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -36,32 +34,37 @@ class DashboardActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.entityRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Initialize the adapter with an item click listener
         adapter = DishAdapter(emptyList()) { dish ->
-            val intent = Intent(this@DashboardActivity, DetailActivity::class.java)
+            val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("dish", dish)
             startActivity(intent)
         }
         recyclerView.adapter = adapter
 
-        // Fetch stored credentials and topic from SharedPreferences
         val firstName = sharedPreferences.getString("username", "") ?: ""
         val studentID = sharedPreferences.getString("password", "") ?: ""
-        val topic = sharedPreferences.getString("topic", "food") ?: "food"
+        val topic = sharedPreferences.getString("topic", "") ?: ""
 
-        fetchDishes(firstName, studentID, topic)
+        if (firstName.isNotEmpty() && studentID.isNotEmpty() && topic.isNotEmpty()) {
+            fetchDishes(firstName, studentID, topic)
+        } else {
+            Toast.makeText(this, "Missing credentials or topic", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun fetchDishes(firstName: String, studentID: String, topic: String) {
-        val url = "https://nit3213api.onrender.com/dashboard/$topic?firstName=$firstName&studentID=$studentID"
-
+        val url =
+            "https://nit3213api.onrender.com/dashboard/$topic?firstName=$firstName&studentID=$studentID"
         val request = Request.Builder().url(url).build()
 
         OkHttpClient().newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@DashboardActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@DashboardActivity,
+                        "Failed to fetch data",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -73,41 +76,47 @@ class DashboardActivity : AppCompatActivity() {
                         val entities = jsonResponse.getJSONArray("entities")
                         val dishList = mutableListOf<Dish>()
 
-                        if (topic == "food") {
-                            for (i in 0 until entities.length()) {
-                                val dish = entities.getJSONObject(i)
-                                val dishName = dish.getString("dishName")
-                                val origin = dish.getString("origin")
-                                val mainIngredient = dish.getString("mainIngredient")
-                                val mealType = dish.getString("mealType")
-                                val description = dish.getString("description")
+                        for (i in 0 until entities.length()) {
+                            val item = entities.getJSONObject(i)
+                            val keys = item.keys()
 
-                                dishList.add(Dish(dishName, origin, mainIngredient, mealType, description))
+                            val fields = mutableMapOf<String, String>()
+                            while (keys.hasNext()) {
+                                val key = keys.next()
+                                fields[key] = item.optString(key)
                             }
 
-                            runOnUiThread {
-                                adapter.updateDishes(dishList)
-                                if (dishList.isEmpty()) {
-                                    Toast.makeText(this@DashboardActivity, "No data found", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        } else {
-                            runOnUiThread {
+                            dishList.add(Dish(fields))
+                        }
+
+                        runOnUiThread {
+                            adapter.updateDishes(dishList)
+                            if (dishList.isEmpty()) {
                                 Toast.makeText(
                                     this@DashboardActivity,
-                                    "This app only supports the 'food' topic. Your assigned topic is '$topic'.",
-                                    Toast.LENGTH_LONG
+                                    "No data found",
+                                    Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
+
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         runOnUiThread {
-                            Toast.makeText(this@DashboardActivity, "Error processing data.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@DashboardActivity,
+                                "Error processing data",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 } else {
                     runOnUiThread {
-                        Toast.makeText(this@DashboardActivity, "Error: Could not retrieve data", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@DashboardActivity,
+                            "Error: Could not retrieve data",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }

@@ -20,34 +20,20 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        // Add inside onCreate() in DetailActivity.kt
-
         val backButton: Button = findViewById(R.id.backButton)
-        backButton.setOnClickListener {
-            finish() // Closes DetailActivity and returns to DashboardActivity
-        }
+        backButton.setOnClickListener { finish() }
 
-
-        // Initialize TextView references
-        dishNameText = findViewById(R.id.dishNameText)
-        originText = findViewById(R.id.originText)
-        mainIngredientText = findViewById(R.id.mainIngredientText)
-        mealTypeText = findViewById(R.id.mealTypeText)
-        descriptionText = findViewById(R.id.descriptionText)
-
-        // Get the Dish object passed from the adapter via Intent using Parcelable
         val dish = intent.getParcelableExtra<Dish>("dish")
 
         if (dish != null) {
-            // Populate the TextViews with dish data
-            dishNameText.text = "Dish Name: ${dish.dishName}"
-            originText.text = "Origin: ${dish.origin}"
-            mainIngredientText.text = "Main Ingredient: ${dish.mainIngredient}"
-            mealTypeText.text = "Meal Type: ${dish.mealType}"
-            descriptionText.text = "Description: ${dish.description}"
+            val descriptionText: TextView = findViewById(R.id.descriptionText)
+            val builder = StringBuilder()
+            for ((key, value) in dish.fields) {
+                builder.append("$key: $value\n")
+            }
+            descriptionText.text = builder.toString()
         } else {
-            // Handle the error gracefully
-            Toast.makeText(this, "Failed to load dish details", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to load details", Toast.LENGTH_SHORT).show()
             finish()
         }
     }

@@ -1,47 +1,31 @@
 import android.os.Parcel
 import android.os.Parcelable
 
-
-data class Dish(
-    val dishName: String,
-    val origin: String,
-    val mainIngredient: String,
-    val mealType: String,
-    val description: String
-) : Parcelable {
-
-
+data class Dish(val fields: Map<String, String>) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: ""
+        mutableMapOf<String, String>().apply {
+            val size = parcel.readInt()
+            repeat(size) {
+                val key = parcel.readString() ?: ""
+                val value = parcel.readString() ?: ""
+                put(key, value)
+            }
+        }
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(dishName)
-        parcel.writeString(origin)
-        parcel.writeString(mainIngredient)
-        parcel.writeString(mealType)
-        parcel.writeString(description)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<Dish> = object : Parcelable.Creator<Dish> {
-            override fun createFromParcel(parcel: Parcel): Dish {
-                return Dish(parcel)
-            }
-
-            override fun newArray(size: Int): Array<Dish?> {
-                return arrayOfNulls(size)
-            }
+        parcel.writeInt(fields.size)
+        for ((key, value) in fields) {
+            parcel.writeString(key)
+            parcel.writeString(value)
         }
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object CREATOR : Parcelable.Creator<Dish> {
+        override fun createFromParcel(parcel: Parcel): Dish = Dish(parcel)
+        override fun newArray(size: Int): Array<Dish?> = arrayOfNulls(size)
     }
 }

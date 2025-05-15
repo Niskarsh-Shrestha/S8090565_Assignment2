@@ -7,41 +7,30 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.s8090565assignment2.DetailActivity
 import com.example.s8090565assignment2.R
 
-class DishAdapter(private var dishes: List<Dish>, private val onItemClick: (Dish) -> Unit) : RecyclerView.Adapter<DishAdapter.DishViewHolder>() {
+class DishAdapter(private var dishes: List<Dish>, private val onItemClick: (Dish) -> Unit) :
+    RecyclerView.Adapter<DishAdapter.DishViewHolder>() {
 
-    // ViewHolder class to hold references to the UI components of each item
     class DishViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val dishName: TextView = itemView.findViewById(R.id.dishName)
-        val origin: TextView = itemView.findViewById(R.id.origin)
+        val line1: TextView = itemView.findViewById(R.id.dishName)
+        val line2: TextView = itemView.findViewById(R.id.origin)
     }
 
-    // Create a new ViewHolder when needed (inflate the item layout)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DishViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.activity_item_dish, parent, false)
-        return DishViewHolder(itemView)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item_dish, parent, false)
+        return DishViewHolder(view)
     }
 
-    // Inside onBindViewHolder
     override fun onBindViewHolder(holder: DishViewHolder, position: Int) {
         val dish = dishes[position]
-        holder.dishName.text = dish.dishName
-        holder.origin.text = dish.origin
+        val values = dish.fields.entries.toList()
+        holder.line1.text = values.getOrNull(0)?.let { "${it.key}: ${it.value}" } ?: "No Data"
+        holder.line2.text = values.getOrNull(1)?.let { "${it.key}: ${it.value}" } ?: ""
 
-        holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, DetailActivity::class.java)
-            intent.putExtra("dish", dish) // Make sure Dish implements Parcelable
-            holder.itemView.context.startActivity(intent)
-        }
+        holder.itemView.setOnClickListener { onItemClick(dish) }
     }
 
+    override fun getItemCount(): Int = dishes.size
 
-
-    // Return the total number of items in the list
-    override fun getItemCount(): Int {
-        return dishes.size
-    }
-
-    // Update the list of dishes and notify the adapter
     fun updateDishes(newDishes: List<Dish>) {
         dishes = newDishes
         notifyDataSetChanged()
