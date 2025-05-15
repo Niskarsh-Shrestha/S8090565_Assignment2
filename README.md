@@ -11,6 +11,7 @@ A simple and interactive app that helps users to discover details about various 
 - [Technologies](#technologies)
 - [Project Structure](#project-structure)
 - [API Reference](#api-reference)
+- [Usage](#usage)
   
 
 ---
@@ -61,6 +62,14 @@ Edit
 6. After cloning, Android Studio will open the project and sync Gradle automatically.
 
 7. Once syncing is complete, run the app on a connected device or emulator.
+
+## My Login Credentials
+
+To access the dashboard and data, use the following credentials on the login screen:
+
+- **Username (First Name):** Niskarsh
+ 
+- **Password (Student ID):** s8090565
 
 ## Technologies Used
 
@@ -129,9 +138,9 @@ Request Body:
 
 {
 
-  "username": "John",
+  "username": "Niskarsh",
   
-  "password": "S1234567"
+  "password": "s8090565"
   
 }
 
@@ -222,3 +231,111 @@ Successful Response:
     "entityTotal": 7
 }
 
+## Usage
+Login
+
+-Launch the app.
+
+-Enter your First Name (Niskarsh) and Student ID (s8090565) in the text fields.
+
+-Tap the Login button to authenticate via the Students API.
+
+Dashboard
+
+-After successful login, you'll be navigated to the Dashboard screen.
+
+-This screen displays a list of items (dishes) fetched from the API, based on your assigned topic.
+
+View Details
+
+-Tap on any item in the list to open its Detail page.
+
+-The detail view shows all available information about the selected item.
+
+Navigation
+
+-Use the Back button to return to the Dashboard from the Detail screen.
+
+-Tap the Logout button on the Dashboard to return to the Login screen.
+
+## Requirements / Prerequisites
+Before running or installing the app, ensure you have the following:
+
+-Software
+Android Studio (Recommended: Latest version)
+
+JDK 11 or higher (used via JavaVersion.VERSION_11)
+
+Gradle (Handled automatically by Android Studio)
+
+-Android SDK
+Compile SDK Version: 35
+
+Minimum SDK Version: 28
+
+Target SDK Version: 35
+
+-Build Tools & Dependencies
+Kotlin JVM Target: 11
+
+Dagger Hilt: 2.48
+
+OkHttp: 4.12.0
+
+org.json: 20231013
+
+AndroidX Libraries: Core KTX, AppCompat, Activity, ConstraintLayout
+
+Material Components
+
+## Configuration
+No additional configuration is required to run this app.
+The app uses a predefined API to fetch student data and does not require any environment variables or API keys.
+
+Note: Ensure your device/emulator has internet access to fetch data from the API successfully.
+
+## Known Issues / Limitations
+-Network connectivity is required to fetch data from the API — there is no offline mode.
+
+-Error handling for API failures (e.g., no internet, server errors) is minimal.
+
+-No input validation is implemented for the login fields.
+
+-The UI is optimized for basic screen sizes and may not scale well on tablets or foldables.
+
+-No unit or UI testing has been added yet.
+
+## Contributing
+
+Contributions are welcome! If you’d like to improve this project, follow these steps:
+
+-Fork the repository.
+
+-Create a new branch:
+git checkout -b feature/Niskarsh-Shrestha  
+
+Make your changes and commit:
+git commit -m "Add your message here"  
+
+Push to your fork:
+git push origin feature/Niskarsh-Shrestha
+
+Submit a pull request.
+
+Please make sure your code follows clean coding practices and includes clear comments when necessary.
+
+## Contact
+
+If you have any questions, suggestions, or issues, feel free to reach out:
+
+Student name: Niskarsh Shrestha
+
+Student ID: s8090565
+
+📧 Email: niskarshshrestha@gmail.com/
+niskarsh.shrestha@live.vu.edu.au/
+s8090565@live.vu.edu.au
+
+🐛 Report Issues: GitHub Issues
+
+I'm happy to help or hear your feedback!
