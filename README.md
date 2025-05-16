@@ -8,10 +8,16 @@ A simple and interactive app that helps users to discover details about various 
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Installation](#installation)
-- [Technologies](#technologies)
+- [My Login Credentials](#my-login-credentials)
+- [Requirements](#requirements)
+- [Technologies Used](#technologies-used)
 - [Project Structure](#project-structure)
 - [API Reference](#api-reference)
 - [Usage](#usage)
+- [Configuration](#configuration)
+- [Limitations](#limitations)
+- [Contributing](#contributing)
+- [Contact](#contact)
   
 
 ---
@@ -40,9 +46,9 @@ A simple and interactive app that helps users to discover details about various 
 
 ---
 
-## ⚙️ Installation
+## Installation
 
-### Cloning the project in Android Studio
+Cloning the project in Android Studio
 
 1. Open **Android Studio**.
 
@@ -50,10 +56,6 @@ A simple and interactive app that helps users to discover details about various 
 
 3. Paste this URL in the **URL** field:  
 https://github.com/Niskarsh-Shrestha/S8090565_Assignment2.git
-
-markdown
-Copy
-Edit
 
 4. Choose the directory where you want to save the project locally.
 
@@ -63,13 +65,25 @@ Edit
 
 7. Once syncing is complete, run the app on a connected device or emulator.
 
+
 ## My Login Credentials
 
 To access the dashboard and data, use the following credentials on the login screen:
 
-- **Username (First Name):** Niskarsh
+- Username (First Name): Niskarsh
  
-- **Password (Student ID):** s8090565
+- Password (Student ID): s8090565
+
+## Requirements
+Before running or installing the app, ensure you have the following:
+
+-Build Tools & Dependencies  
+-Kotlin JVM Target: 11  
+-Dagger Hilt: 2.48  
+-Retrofit: 2.9.0  
+-org.json: 20231013  
+-AndroidX Libraries: Core KTX, AppCompat, Activity, ConstraintLayout  
+-Material Components
 
 ## Technologies Used
 
@@ -78,6 +92,7 @@ To access the dashboard and data, use the following credentials on the login scr
 - Android Studio
 - Gradle
 - Hilt (for Dependency Injection)
+- Retrofit (for HTTP Networking)
 
 ## Project Structure
 
@@ -258,43 +273,13 @@ Navigation
 
 -Tap the Logout button on the Dashboard to return to the Login screen.
 
-## Requirements / Prerequisites
-Before running or installing the app, ensure you have the following:
-
--Software
-Android Studio (Recommended: Latest version)
-
-JDK 11 or higher (used via JavaVersion.VERSION_11)
-
-Gradle (Handled automatically by Android Studio)
-
--Android SDK
-Compile SDK Version: 35
-
-Minimum SDK Version: 28
-
-Target SDK Version: 35
-
--Build Tools & Dependencies
-Kotlin JVM Target: 11
-
-Dagger Hilt: 2.48
-
-OkHttp: 4.12.0
-
-org.json: 20231013
-
-AndroidX Libraries: Core KTX, AppCompat, Activity, ConstraintLayout
-
-Material Components
-
 ## Configuration
 No additional configuration is required to run this app.
 The app uses a predefined API to fetch student data and does not require any environment variables or API keys.
 
 Note: Ensure your device/emulator has internet access to fetch data from the API successfully.
 
-## Known Issues / Limitations
+## Limitations
 -Network connectivity is required to fetch data from the API — there is no offline mode.
 
 -Error handling for API failures (e.g., no internet, server errors) is minimal.
@@ -332,10 +317,8 @@ Student name: Niskarsh Shrestha
 
 Student ID: s8090565
 
-📧 Email: niskarshshrestha@gmail.com/
-niskarsh.shrestha@live.vu.edu.au/
-s8090565@live.vu.edu.au
+-Email: s8090565@live.vu.edu.au
 
-🐛 Report Issues: GitHub Issues
+-Report Issues: GitHub Issues
 
 I'm happy to help or hear your feedback!
