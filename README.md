@@ -96,43 +96,7 @@ Before running or installing the app, ensure you have the following:
 
 ## Project Structure
 
-S8090565Assignment2/
-|- build.gradle.kts
-|- gradle.properties
-|- gradlew
-|- gradlew.bat
-|- local.properties
-|- settings.gradle.kts
-|- app/
-| |- build.gradle.kts
-| |- proguard-rules.pro
-| |- src/
-| |- main/
-| |- AndroidManifest.xml
-| |- java/
-| | |- com/
-| | |- example/
-| | |- s8090565assignment2/
-| | |- DashboardActivity.kt
-| | |- DetailActivity.kt
-| | |- Dish.kt
-| | |- DishAdapter.kt
-| | |- item_dish.kt
-| | |- MainActivity.kt
-| | |- MyApp.kt
-| |- res/
-| |- drawable/
-| | |- ic_launcher_background.xml
-| | |- ic_launcher_foreground.xml
-| |- layout/
-| | |- activity_dashboard.xml
-| | |- activity_detail.xml
-| | |- activity_item_dish.xml
-| | |- activity_main.xml
-| |- values/
-| |- colors.xml
-| |- strings.xml
-| |- themes.xml
+![image](https://github.com/user-attachments/assets/175ac856-b65c-4638-82a1-e58121cd14f7)
 
 ## API Reference
 -Authentication API
