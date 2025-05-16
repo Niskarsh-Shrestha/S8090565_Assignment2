@@ -8,12 +8,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var okHttpClient: OkHttpClient
 
     private lateinit var etFirstName: EditText
     private lateinit var etStudentId: EditText
@@ -48,7 +53,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun authenticateUser(firstName: String, studentId: String) {
-        val client = OkHttpClient()
         val json = JSONObject()
         json.put("username", firstName)
         json.put("password", studentId)
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             .post(body)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
+        okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "Network error, please try again.", Toast.LENGTH_SHORT).show()
@@ -77,7 +81,6 @@ class MainActivity : AppCompatActivity() {
 
                         if (keypass.isNotEmpty()) {
                             runOnUiThread {
-                                // Save credentials and topic to SharedPreferences
                                 val sharedPreferences = getSharedPreferences("UserCredentials", MODE_PRIVATE)
                                 with(sharedPreferences.edit()) {
                                     putString("username", firstName)
@@ -86,13 +89,11 @@ class MainActivity : AppCompatActivity() {
                                     apply()
                                 }
 
-                                // Launch dashboard
                                 val intent = Intent(this@MainActivity, DashboardActivity::class.java)
                                 startActivity(intent)
                                 finish()
                             }
-                        }
-                        else {
+                        } else {
                             runOnUiThread {
                                 Toast.makeText(this@MainActivity, "Invalid credentials or no topic assigned.", Toast.LENGTH_SHORT).show()
                             }

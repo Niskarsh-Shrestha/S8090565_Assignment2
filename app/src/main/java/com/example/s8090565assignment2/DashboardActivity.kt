@@ -6,14 +6,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DashboardActivity : AppCompatActivity() {
+
+    @Inject lateinit var okHttpClient: OkHttpClient
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DishAdapter
@@ -57,7 +63,7 @@ class DashboardActivity : AppCompatActivity() {
             "https://nit3213api.onrender.com/dashboard/$topic?firstName=$firstName&studentID=$studentID"
         val request = Request.Builder().url(url).build()
 
-        OkHttpClient().newCall(request).enqueue(object : Callback {
+        okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(
