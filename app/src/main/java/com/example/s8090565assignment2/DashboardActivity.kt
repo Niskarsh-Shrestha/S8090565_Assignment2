@@ -6,20 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.s8090565assignment2.network.ApiService
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.*
-import org.json.JSONObject
-import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardActivity : AppCompatActivity() {
 
-    @Inject lateinit var okHttpClient: OkHttpClient
+    @Inject lateinit var apiService: ApiService
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DishAdapter
@@ -59,72 +56,31 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun fetchDishes(firstName: String, studentID: String, topic: String) {
-        val url =
-            "https://nit3213api.onrender.com/dashboard/$topic?firstName=$firstName&studentID=$studentID"
-        val request = Request.Builder().url(url).build()
+        apiService.getDashboardData(topic, firstName, studentID).enqueue(object : retrofit2.Callback<ApiService.DashboardResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<ApiService.DashboardResponse>,
+                response: retrofit2.Response<ApiService.DashboardResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val dashboardResponse = response.body()
+                    val entities = dashboardResponse?.entities ?: emptyList()
 
-        okHttpClient.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(
-                        this@DashboardActivity,
-                        "Failed to fetch data",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    val dishList = entities.map { entity ->
+                        Dish(entity)
+                    }
+
+                    adapter.updateDishes(dishList)
+
+                    if (dishList.isEmpty()) {
+                        Toast.makeText(this@DashboardActivity, "No data found", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@DashboardActivity, "Error: Could not retrieve data", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                if (response.isSuccessful && responseBody != null) {
-                    try {
-                        val jsonResponse = JSONObject(responseBody)
-                        val entities = jsonResponse.getJSONArray("entities")
-                        val dishList = mutableListOf<Dish>()
-
-                        for (i in 0 until entities.length()) {
-                            val item = entities.getJSONObject(i)
-                            val keys = item.keys()
-
-                            val fields = mutableMapOf<String, String>()
-                            while (keys.hasNext()) {
-                                val key = keys.next()
-                                fields[key] = item.optString(key)
-                            }
-
-                            dishList.add(Dish(fields))
-                        }
-
-                        runOnUiThread {
-                            adapter.updateDishes(dishList)
-                            if (dishList.isEmpty()) {
-                                Toast.makeText(
-                                    this@DashboardActivity,
-                                    "No data found",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        runOnUiThread {
-                            Toast.makeText(
-                                this@DashboardActivity,
-                                "Error processing data",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@DashboardActivity,
-                            "Error: Could not retrieve data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+            override fun onFailure(call: retrofit2.Call<ApiService.DashboardResponse>, t: Throwable) {
+                Toast.makeText(this@DashboardActivity, "Failed to fetch data", Toast.LENGTH_SHORT).show()
             }
         })
     }

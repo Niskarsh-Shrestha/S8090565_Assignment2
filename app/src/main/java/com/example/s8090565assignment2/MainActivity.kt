@@ -6,35 +6,26 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.s8090565assignment2.model.AuthRequest
+import com.example.s8090565assignment2.network.ApiService
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.json.JSONObject
-import java.io.IOException
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var okHttpClient: OkHttpClient
+    @Inject
+    lateinit var apiService: ApiService
 
     private lateinit var etFirstName: EditText
     private lateinit var etStudentId: EditText
     private lateinit var btnLogin: Button
 
-    private val authUrl = "https://nit3213api.onrender.com/sydney/auth"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         etFirstName = findViewById(R.id.etFirstName)
         etStudentId = findViewById(R.id.etStudentId)
@@ -53,62 +44,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun authenticateUser(firstName: String, studentId: String) {
-        val json = JSONObject()
-        json.put("username", firstName)
-        json.put("password", studentId)
-
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, json.toString())
-
-        val request = Request.Builder()
-            .url(authUrl)
-            .post(body)
-            .build()
-
-        okHttpClient.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Network error, please try again.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                if (response.isSuccessful && responseBody != null) {
-                    try {
-                        val jsonResponse = JSONObject(responseBody)
-                        val keypass = jsonResponse.optString("keypass")
-
-                        if (keypass.isNotEmpty()) {
-                            runOnUiThread {
-                                val sharedPreferences = getSharedPreferences("UserCredentials", MODE_PRIVATE)
-                                with(sharedPreferences.edit()) {
-                                    putString("username", firstName)
-                                    putString("password", studentId)
-                                    putString("topic", keypass)
-                                    apply()
-                                }
-
-                                val intent = Intent(this@MainActivity, DashboardActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
-                        } else {
-                            runOnUiThread {
-                                Toast.makeText(this@MainActivity, "Invalid credentials or no topic assigned.", Toast.LENGTH_SHORT).show()
-                            }
+        lifecycleScope.launch {
+            try {
+                val response = apiService.authenticate(AuthRequest(firstName, studentId))
+                if (response.isSuccessful) {
+                    val keypass = response.body()?.keypass.orEmpty()
+                    if (keypass.isNotEmpty()) {
+                        val prefs = getSharedPreferences("UserCredentials", MODE_PRIVATE)
+                        with(prefs.edit()) {
+                            putString("username", firstName)
+                            putString("password", studentId)
+                            putString("topic", keypass)
+                            apply()
                         }
-                    } catch (e: Exception) {
-                        runOnUiThread {
-                            Toast.makeText(this@MainActivity, "Error parsing response.", Toast.LENGTH_SHORT).show()
-                        }
+                        startActivity(Intent(this@MainActivity, DashboardActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this@MainActivity, "Invalid credentials or no topic.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(this@MainActivity, "Authentication failed.", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                Toast.makeText(this@MainActivity, "Network error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 }
