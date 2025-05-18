@@ -6,10 +6,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.s8090565assignment2.R
 
 class DetailActivity : AppCompatActivity() {
 
+    // TextView variables for displaying dish details
     private lateinit var dishNameText: TextView
     private lateinit var originText: TextView
     private lateinit var mainIngredientText: TextView
@@ -20,12 +20,15 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
+        // Set up back button to close the activity and return to previous screen
         val backButton: Button = findViewById(R.id.backButton)
         backButton.setOnClickListener { finish() }
 
+        // Retrieve the Dish object passed from DashboardActivity
         val dish = intent.getParcelableExtra<Dish>("dish")
 
         if (dish != null) {
+            // Displaying all key-value fields from the dish object
             val descriptionText: TextView = findViewById(R.id.descriptionText)
             val builder = StringBuilder()
             for ((key, value) in dish.fields) {

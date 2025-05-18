@@ -16,11 +16,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardActivity : AppCompatActivity() {
 
+    // Injecting the ApiService using Hilt for making API calls
     @Inject lateinit var apiService: ApiService
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DishAdapter
 
+    // Accessing stored user credentials and topic using SharedPreferences
     private val sharedPreferences by lazy { getSharedPreferences("UserCredentials", MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,25 +31,30 @@ class DashboardActivity : AppCompatActivity() {
 
         val logoutButton: Button = findViewById(R.id.logoutButton)
         logoutButton.setOnClickListener {
+            // Logging out: clearing activity stack and returning to login screen
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
 
+        // Setting up RecyclerView with adapter
         recyclerView = findViewById(R.id.entityRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = DishAdapter(emptyList()) { dish ->
+            // Navigating to DetailActivity on item click
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("dish", dish)
             startActivity(intent)
         }
         recyclerView.adapter = adapter
 
+        // Retrieving user data and topic from SharedPreferences
         val firstName = sharedPreferences.getString("username", "") ?: ""
         val studentID = sharedPreferences.getString("password", "") ?: ""
         val topic = sharedPreferences.getString("topic", "") ?: ""
 
+        // Checking if data is available before making the API call
         if (firstName.isNotEmpty() && studentID.isNotEmpty() && topic.isNotEmpty()) {
             fetchDishes(firstName, studentID, topic)
         } else {
@@ -55,6 +62,7 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    // Fetches data from the API and updates the RecyclerView
     private fun fetchDishes(firstName: String, studentID: String, topic: String) {
         apiService.getDashboardData(topic, firstName, studentID).enqueue(object : retrofit2.Callback<ApiService.DashboardResponse> {
             override fun onResponse(
@@ -65,9 +73,8 @@ class DashboardActivity : AppCompatActivity() {
                     val dashboardResponse = response.body()
                     val entities = dashboardResponse?.entities ?: emptyList()
 
-                    val dishList = entities.map { entity ->
-                        Dish(entity)
-                    }
+                    // Mapping API data to Dish objects
+                    val dishList = entities.map { entity -> Dish(entity) }
 
                     adapter.updateDishes(dishList)
 
