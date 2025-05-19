@@ -142,11 +142,11 @@ Notes:
 
 Endpoint:
 
-GET https://nit3213api.onrender.com/dashboard/{topic}?firstName={firstName}&studentID={studentID}
+GET https://nit3213api.onrender.com/dashboard/food
 
 Example:
 
-https://nit3213api.onrender.com/dashboard/food?firstName=John&studentID=S1234567
+https://nit3213api.onrender.com/dashboard/{keypass}
 
 Used In:
 DashboardActivity.kt
